@@ -7,64 +7,62 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --primary-bg: #ffffff;
-      --surface: #f7f8fa;
+    :root{
+      --bg: #ffffff;
+      --surface: #f6f7f9;
       --muted: #6b7280;
-      --accent: #0f766e;
-      --accent-2: #10b981;
+      --accent: #0f766e;    /* tom esverdeado */
+      --accent-2: #10b981;  /* verde secundário */
       --heading: #0f172a;
       --card-border: #e6e9ee;
       --jw-green: #449D44;
       --jw-green-light: #b7e4c7;
-      --jw-text: #333333;
-      --jw-bg: #FFFFFF;
       --font-sans: 'Open Sans', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     }
 
-    /* Base */
-    html,body { height:100%; }
+    html,body { height:100%; margin:0; }
     body {
       font-family: var(--font-sans);
-      background: var(--primary-bg);
+      background: var(--bg);
       color: var(--heading);
-      margin: 0;
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
     }
 
     /* Header / Nav */
     nav { background: transparent; }
-    .nav-link { color: var(--muted); font-weight: 600; margin-left: 18px; text-decoration:none; }
+    .nav-link { color: var(--muted); font-weight:600; margin-left:18px; text-decoration:none; }
     .nav-link:hover { color: var(--accent); }
+
+    /* Card base */
+    .card { background:#fff; border:1px solid var(--card-border); border-radius:12px; box-shadow:0 8px 20px rgba(2,6,23,0.04); }
 
     /* Login overlay */
     #login-overlay {
       position: fixed; inset:0;
-      background-color: rgba(248,249,250,0.98); z-index: 1000;
-      display: flex; justify-content: center; align-items: center;
+      background-color: rgba(248,249,250,0.98); z-index: 1200;
+      display:flex; justify-content:center; align-items:center;
     }
-    .card { background:#fff; border:1px solid var(--card-border); border-radius:12px; box-shadow:0 10px 30px rgba(2,6,23,0.06); }
+    .input { width:100%; padding:0.75rem; border:1px solid #e5e7eb; border-radius:8px; margin-bottom:0.75rem; }
 
     /* Buttons */
     .btn-login {
-      width: 100%;
+      width:100%;
       background-color: var(--jw-green-light);
-      color: #000;
-      font-weight: 700;
-      padding: 0.75rem;
-      border-radius: 0.5rem;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.12s ease, transform 0.06s ease;
+      color:#000;
+      font-weight:700;
+      padding:0.75rem;
+      border-radius:10px;
+      border:none;
+      cursor:pointer;
+      transition: background-color .12s ease, transform .06s ease;
     }
-    .btn-login:active,
-    .btn-login.btn-pressed {
+    .btn-login:active, .btn-login.btn-pressed {
       background-color: var(--jw-green);
-      color: #fff;
+      color:#fff;
       transform: translateY(1px);
     }
-    .btn-ghost { background:#fff; border:1px solid #e6e9ee; padding:0.5rem 0.75rem; border-radius:8px; cursor:pointer; }
+    .btn-ghost { background:#fff; border:1px solid var(--card-border); padding:0.5rem 0.75rem; border-radius:8px; cursor:pointer; }
 
     /* Layout main */
     .app-shell { display:flex; gap:24px; max-width:1200px; margin:0 auto; padding:24px; align-items:flex-start; }
@@ -87,19 +85,18 @@
     .tool-title { color:var(--accent); font-weight:600; margin-top:8px; }
 
     /* Footer */
-    footer { color:#94a3b8; }
+    footer { color:#94a3b8; padding-bottom:32px; }
 
     /* Modals */
     .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display:flex; align-items:center; justify-content:center; z-index:2000; }
     .modal-card { background:#fff; padding:1.25rem; border-radius:0.5rem; width:100%; max-width:420px; box-shadow:0 10px 30px rgba(0,0,0,0.12); }
-    .input { width:100%; padding:0.75rem; border:1px solid #e5e7eb; border-radius:0.375rem; margin-bottom:0.75rem; }
     .btn-primary { background:var(--jw-green); color:#fff; padding:0.5rem 0.75rem; border-radius:0.375rem; border:none; cursor:pointer; }
     .btn-secondary { background:#f3f4f6; color:#111827; padding:0.5rem 0.75rem; border-radius:0.375rem; border:none; cursor:pointer; }
     .text-error { color:#dc2626; font-size:0.9rem; margin-top:0.5rem; }
     .text-success { color:#16a34a; font-size:0.9rem; margin-top:0.5rem; }
 
     /* Responsive */
-    @media (max-width: 900px) {
+    @media (max-width:900px) {
       .app-shell { padding:12px; flex-direction:column; }
       .sidebar { display:none; width:100%; }
       .sidebar-toggle { display:inline-block; background:var(--accent); color:#fff; padding:8px 10px; border-radius:8px; border:none; cursor:pointer; }
@@ -140,6 +137,7 @@
           <button id="btn-login-google" class="btn-ghost flex items-center justify-center text-sm">
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-4 h-4 mr-2"> Google
           </button>
+          <!-- Apple removido intencionalmente -->
           <div></div>
         </div>
 
