@@ -103,6 +103,7 @@
 
         /* ======================
            CONFIGURAÇÕES E ELEMENTOS
+           (Bloco unificado para evitar erro de redeclaração)
         ======================*/
         // Lembre-se de mudar para "inscricoes_alunos" quando for para produção!
         const REGISTROS_REF = collection(db, "inscricoes_alunos_TESTE"); 
@@ -110,25 +111,29 @@
         const LIMITE_TOTAL = 40; 
         const form = document.getElementById('form-cadastro');
         const telefoneInput = document.getElementById('telefone');
+        
+        // Elementos dos campos de Responsável
+        const responsavelBox = document.getElementById('responsavel-box');
         const nomeResponsavelInput = document.getElementById('nome_responsavel');
+        const responsavelInscritoBox = document.getElementById('responsavel-inscrito-box');
 
 
         /* ======================
-           FUNÇÕES DE VALIDAÇÃO E MÁSCARA (NOVAS/CORRIGIDAS)
+           FUNÇÕES DE VALIDAÇÃO E MÁSCARA
         ======================*/
 
-        // NOVO: Validação de E-mail (Exige domínio válido: nome@servidor.com/net/etc.)
+        // Validação de E-mail (Exige domínio válido: nome@servidor.com/net/etc.)
         function isValidEmail(email) {
             const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
             return regex.test(email);
         }
         
-        // NOVO: Validação de Sobrenome (Exige pelo menos um espaço)
+        // Validação de Sobrenome (Exige pelo menos um espaço)
         function isValidName(name) {
             return name.trim().includes(' ');
         }
         
-        // NOVO: 1. Lógica da Máscara de Telefone (Formatação)
+        // 1. Lógica da Máscara de Telefone (Formatação)
         function maskPhone(value) {
             if (!value) return "";
             value = value.replace(/\D/g, ""); // Remove tudo que não é dígito
@@ -138,7 +143,7 @@
             return value;
         }
 
-        // NOVO: 2. Validação do Comprimento do Telefone
+        // 2. Validação do Comprimento do Telefone
         function isValidPhone(value) {
             const cleanValue = value.replace(/\D/g, "");
             // Aceita 10 dígitos (DDD + 8) ou 11 dígitos (DDD + 9)
@@ -147,25 +152,20 @@
 
 
         /* ======================
-           LÓGICA DE EVENTOS E LISTENERS
+           LÓGICA VISUAL E OBRIGATORIEDADE (CORRIGIDA)
         ======================*/
-        
-        // Listener da Máscara de Telefone (ADICIONADO AQUI)
-        telefoneInput.addEventListener('input', (e) => {
-            e.target.value = maskPhone(e.target.value);
-        });
-
         function handleMinorAge() {
             const isMinor = document.getElementById('idade_nao').checked;
             
             // Controle da caixa de Nome do Responsável
             if (isMinor) {
-                responsavelBox.classList.remove('hidden');
+                // REMOVE O 'hidden' para mostrar os campos
+                responsavelBox.classList.remove('hidden'); 
                 nomeResponsavelInput.required = true;
                 
                 // Controle da caixa de Responsável Inscrito
-                responsavelInscritoBox.classList.remove('hidden');
-                document.getElementById('resp_sim').required = true; // Torna o grupo obrigatório
+                responsavelInscritoBox.classList.remove('hidden'); // REMOVE O 'hidden'
+                document.getElementById('resp_sim').required = true; 
             } else {
                 // Se for maior, esconde e remove obrigatoriedade
                 responsavelBox.classList.add('hidden');
@@ -176,6 +176,15 @@
                 document.getElementById('resp_sim').required = false;
             }
         }
+
+        /* ======================
+           LÓGICA DE EVENTOS E LISTENERS
+        ======================*/
+
+        // Listener da Máscara de Telefone
+        telefoneInput.addEventListener('input', (e) => {
+            e.target.value = maskPhone(e.target.value);
+        });
 
         // Adiciona listeners para garantir que a lógica seja aplicada ao mudar o rádio
         document.getElementById('idade_nao').addEventListener('change', handleMinorAge);
@@ -217,7 +226,7 @@
 
             // Validação de Telefone
             if (!isValidPhone(telefone)) {
-                alert('O número de telefone é inválido. Por favor, inclua o DDD e 8 ou 9 dígitos.');
+                alert('O número de telefone é inválido. Por favor, inclua o DDD e 8 ou 9 dígitos (10 ou 11 números no total).');
                 return;
             }
             
