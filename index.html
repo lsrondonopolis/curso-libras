@@ -8,7 +8,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      /* Paleta igual ao arquivo Associacao */
       --jw-green: #449D44;
       --jw-red: #C9302C;
       --jw-background: #F0F0EE;
@@ -25,7 +24,7 @@
       -moz-osx-font-smoothing: grayscale;
     }
 
-    /* Cabeçalho escuro, alinhado às páginas de treino */
+    /* Cabeçalho escuro */
     .site-header {
       background-color: var(--jw-dark);
       color: #fff;
@@ -37,47 +36,18 @@
       top: 0;
       z-index: 100;
     }
-    .site-title {
-      font-weight: 700;
-      font-size: 1rem;
-      letter-spacing: .02em;
-    }
-    .site-title span {
-      font-style: italic;
-      font-weight: 600;
-      opacity: .9;
-    }
-    .header-actions {
-      margin-left: auto;
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-    .sidebar-toggle {
-      background: var(--jw-green);
-      color: #fff;
-      padding: 6px 10px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      font-weight: 700;
-    }
-    .btn-logout {
-      background: var(--jw-red);
-      color: #fff;
-      padding: 6px 10px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      font-weight: 700;
-    }
+    .site-title { font-weight:700; font-size:1rem; letter-spacing:.02em; }
+    .site-title span { font-style:italic; font-weight:600; opacity:.9; }
+    .header-actions { margin-left:auto; display:flex; gap:8px; align-items:center; }
+    .sidebar-toggle { background:var(--jw-green); color:#fff; padding:6px 10px; border-radius:8px; border:none; cursor:pointer; font-weight:700; }
+    .btn-logout { background:var(--jw-red); color:#fff; padding:6px 10px; border-radius:8px; border:none; cursor:pointer; font-weight:700; }
 
     /* Login overlay */
     #login-overlay {
       position: fixed; inset:0;
       background-color: rgba(240,240,238,0.98);
       z-index: 1200;
-      display: flex; justify-content: center; align-items: center;
+      display:flex; justify-content:center; align-items:center;
     }
     .card { background:#fff; border:1px solid var(--card-border); border-radius:10px; box-shadow:0 6px 18px rgba(2,6,23,0.04); }
     .input { width:100%; padding:0.75rem; border:1px solid #e5e7eb; border-radius:8px; margin-bottom:0.75rem; }
@@ -90,21 +60,46 @@
     .btn-ghost { background:#fff; border:1px solid var(--card-border); padding:0.5rem 0.75rem; border-radius:8px; cursor:pointer; }
 
     /* Layout principal */
-    .app-shell { display:flex; gap:24px; max-width:1200px; margin:0 auto; padding:24px; }
+    .app-shell { display:flex; gap:24px; max-width:1200px; margin:0 auto; padding:24px; align-items:flex-start; }
     .sidebar {
       width:260px; background:#fff; border:1px solid var(--card-border);
       border-radius:10px; padding:12px;
     }
-    .sidebar h4 { font-weight:700; margin:8px 0; color:var(--jw-dark); }
-    .sidebar ul { list-style:none; padding:0; margin:0 0 12px 0; }
-    .sidebar li { margin:6px 0; }
-    .sidebar a {
-      display:block; padding:8px; border-radius:8px;
-      font-weight:700; /* negrito nas abas */
-      color:var(--jw-dark); text-decoration:none;
-    }
-    .sidebar a:hover { background:rgba(68,157,68,0.10); color:var(--jw-green); }
 
+    /* Sidebar titles (as buttons) */
+    .sidebar-section-toggle {
+      display:block;
+      width:100%;
+      text-align:left;
+      background:transparent;
+      border:none;
+      padding:8px 6px;
+      font-weight:700;           /* negrito */
+      font-style:italic;         /* itálico */
+      text-decoration: underline;/* sublinhado */
+      color:var(--jw-dark);
+      cursor:pointer;
+      border-radius:6px;
+    }
+    .sidebar-section-toggle:focus { outline:2px solid rgba(68,157,68,0.18); outline-offset:2px; }
+
+    .sidebar-section {
+      margin-top:6px;
+      margin-bottom:12px;
+    }
+
+    .sidebar-list {
+      list-style:none; padding-left:0; margin:6px 0 0 0;
+      transition: max-height .18s ease;
+      overflow:hidden;
+    }
+    .sidebar-list li { margin:6px 0; }
+    .sidebar-list a {
+      display:block; padding:8px 10px; border-radius:6px; color:var(--jw-dark); text-decoration:none; font-weight:600;
+    }
+    .sidebar-list a:hover { background: rgba(68,157,68,0.06); color:var(--jw-green); }
+
+    /* Content area */
     .content-area { flex:1; }
 
     /* Cards centrais */
@@ -117,7 +112,6 @@
     .tool-card img { width:100%; max-width:260px; height:140px; object-fit:contain; border-radius:8px; }
     .tool-title { font-weight:700; color:var(--jw-dark); }
 
-    /* Footer */
     footer { color:#94a3b8; padding:24px; text-align:center; }
 
     /* Modais */
@@ -179,29 +173,27 @@
     </header>
 
     <div class="app-shell">
-      <!-- SIDEBAR com itens solicitados -->
-      <aside class="sidebar" id="app-sidebar">
-  <div class="sidebar-titles-row">
-    <h4 class="sidebar-inline-title">Atividades</h4>
-    <span class="sidebar-sep" aria-hidden="true">•</span>
-    <h4 class="sidebar-inline-title">Material de apoio</h4>
-  </div>
+      <!-- SIDEBAR com seções colapsáveis -->
+      <aside class="sidebar" id="app-sidebar" aria-label="Menu principal">
+        <!-- Atividades -->
+        <div class="sidebar-section" id="section-atividades">
+          <button class="sidebar-section-toggle" aria-expanded="false" data-target="atividades-list">Atividades</button>
+          <ul id="atividades-list" class="sidebar-list" style="max-height:0;">
+            <li><a href="Soletracao.html">Soletrando</a></li>
+            <li><a href="Associacao.html">Combinações</a></li>
+            <li><a href="Frases.html">Frases</a></li>
+          </ul>
+        </div>
 
-  <div class="sidebar-section" data-section="atividades">
-    <ul>
-      <li><a href="Soletracao.html">Soletrando</a></li>
-      <li><a href="Associacao.html">Combinações</a></li>
-      <li><a href="Frases.html">Frases</a></li>
-    </ul>
-  </div>
-
-  <div class="sidebar-section" data-section="material">
-    <ul>
-      <li><a href="materiais/LIBRAS - Guia do Aluno.pdf" download>Guia do Aluno</a></li>
-      <li><a href="materiais/LIBRAS - Caderno de Atividades.pdf" download>Caderno de Atividades</a></li>
-    </ul>
-  </div>
-</aside>
+        <!-- Material de apoio -->
+        <div class="sidebar-section" id="section-material">
+          <button class="sidebar-section-toggle" aria-expanded="false" data-target="material-list">Material de apoio</button>
+          <ul id="material-list" class="sidebar-list" style="max-height:0;">
+            <li><a href="materiais/LIBRAS - Guia do Aluno.pdf" download>Guia do Aluno</a></li>
+            <li><a href="materiais/LIBRAS - Caderno de Atividades.pdf" download>Caderno de Atividades</a></li>
+          </ul>
+        </div>
+      </aside>
 
       <!-- ÁREA DE CONTEÚDO -->
       <main class="content-area">
@@ -212,15 +204,15 @@
 
         <section class="grid grid-cols-1 md:grid-cols-3 gap-6 px-4 py-4">
           <a href="Soletracao.html" class="tool-card">
-            <img src="assets/img_soletracao.png" alt="Soletrando">
+            <img src="assets/img_soletracao.png" alt="Soletrando" onerror="this.src='https://placehold.co/300x200/png?text=Soletrando'">
             <h3 class="tool-title">Soletrando</h3>
           </a>
           <a href="Associacao.html" class="tool-card">
-            <img src="assets/img_associacao.png" alt="Combinações">
+            <img src="assets/img_associacao.png" alt="Combinações" onerror="this.src='https://placehold.co/300x200/png?text=Combinacoes'">
             <h3 class="tool-title">Combinações</h3>
           </a>
           <a href="Frases.html" class="tool-card">
-            <img src="assets/img_frases.png" alt="Frases">
+            <img src="assets/img_frases.png" alt="Frases" onerror="this.src='https://placehold.co/300x200/png?text=Frases'">
             <h3 class="tool-title">Frases</h3>
           </a>
         </section>
@@ -230,7 +222,7 @@
     <footer>&copy; 2025 Curso LIBRAS LS-Roo</footer>
   </div>
 
-  <!-- MODAL: TROCA DE SENHA (PRIMEIRO ACESSO) -->
+  <!-- MODAIS (troca senha / esqueci) -->
   <div id="change-pass-modal" class="modal-backdrop hidden" aria-hidden="true">
     <div class="modal-card">
       <h3 class="text-lg font-semibold mb-2">Alterar senha (primeiro acesso)</h3>
@@ -244,7 +236,6 @@
     </div>
   </div>
 
-  <!-- MODAL: ESQUECI A SENHA -->
   <div id="forgot-modal" class="modal-backdrop hidden" aria-hidden="true">
     <div class="modal-card">
       <h3 class="text-lg font-semibold mb-2">Redefinir senha</h3>
@@ -268,7 +259,7 @@
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // Config Firebase
+    // Config Firebase (ajuste se necessário)
     const firebaseConfig = {
       apiKey: "AIzaSyCvWBG_dk-3puP04otTBk8TY68-evcEnOQ",
       authDomain: "curso-libras-lsroo.firebaseapp.com",
@@ -282,7 +273,7 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // DOM
+    // DOM refs
     const loginOverlay = document.getElementById('login-overlay');
     const mainContent  = document.getElementById('main-content');
     const loginMsg     = document.getElementById('login-msg');
@@ -300,7 +291,7 @@
     const confirmPassInput = document.getElementById('confirm-password');
     const changePassMsg = document.getElementById('change-pass-msg');
 
-    // Sidebar toggle (mobile)
+    // Sidebar toggle (mobile) and section toggles
     const sidebarToggle = document.getElementById('sidebar-toggle');
     const appSidebar = document.getElementById('app-sidebar');
 
@@ -322,7 +313,34 @@
       sidebarToggle.setAttribute('aria-expanded', visible ? 'false' : 'true');
     });
 
-    /* ========= Sessão única robusta ========= */
+    // Section toggles: expand/collapse with smooth max-height
+    document.querySelectorAll('.sidebar-section-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-target');
+        const list = document.getElementById(targetId);
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        if (!list) return;
+        if (expanded) {
+          // collapse
+          list.style.maxHeight = '0';
+          btn.setAttribute('aria-expanded', 'false');
+        } else {
+          // expand: set maxHeight to scrollHeight px
+          list.style.maxHeight = list.scrollHeight + 'px';
+          btn.setAttribute('aria-expanded', 'true');
+        }
+      });
+
+      // Initialize collapsed (ensure aria reflects state)
+      const targetIdInit = btn.getAttribute('data-target');
+      const listInit = document.getElementById(targetIdInit);
+      if (listInit) {
+        listInit.style.maxHeight = '0';
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    /* ========= Sessão única robusta (mantive a lógica que você validou) ========= */
 
     function nowMs() { return Date.now(); }
     function generateSessionToken() {
@@ -365,79 +383,53 @@
     }
 
     async function syncSession(user) {
-      // grava local -> servidor, confirma leitura e retry único se necessário
       const first = await registerSession(user);
       if (!first) return { ok: false, reason: "register_failed" };
-
-      // pequena espera para consistência
       await new Promise(r => setTimeout(r, 200));
-
       const srv1 = await getSessionInfo(user);
-      if (srv1 && srv1.token === first.token) {
-        return { ok: true };
-      }
-
-      // retry único
-      const retry = await registerSession(user, first.token);
+      if (srv1 && srv1.token === first.token) return { ok: true };
+      await registerSession(user, first.token);
       await new Promise(r => setTimeout(r, 200));
       const srv2 = await getSessionInfo(user);
-
-      if (srv2 && srv2.token === first.token) {
-        return { ok: true };
-      }
-
-      // Não conseguimos alinhar; ajustar local para servidor para não travar
+      if (srv2 && srv2.token === first.token) return { ok: true };
       if (srv2 && srv2.token) {
         localStorage.setItem("sessionToken", srv2.token);
         localStorage.setItem("sessionUpdatedAt", String(srv2.updatedAt || nowMs()));
       }
-      return { ok: true }; // não travar login
+      return { ok: true };
     }
 
     async function verifySession(user) {
-      // Compara local vs servidor com margem de tempo
       try {
         const localToken = localStorage.getItem("sessionToken");
         const localAt = Number(localStorage.getItem("sessionUpdatedAt") || "0");
         const srv = await getSessionInfo(user);
 
         if (!srv || !srv.token) {
-          // servidor sem doc/token: registrar
           const res = await syncSession(user);
           return res.ok ? { ok: true, mustChange: srv ? srv.mustChangePassword === true : false } : { ok: false };
         }
 
         if (!localToken) {
-          // sem token local: alinhar
           localStorage.setItem("sessionToken", srv.token);
           localStorage.setItem("sessionUpdatedAt", String(srv.updatedAt || nowMs()));
           return { ok: true, mustChange: srv.mustChangePassword === true };
         }
 
-        if (srv.token === localToken) {
-          return { ok: true, mustChange: srv.mustChangePassword === true };
-        }
+        if (srv.token === localToken) return { ok: true, mustChange: srv.mustChangePassword === true };
 
-        // Tokens diferentes: verificar quem é mais recente
         const srvAt = Number(srv.updatedAt || 0);
-        const marginMs = 3000; // margem de 3s para evitar falso positivo
-
-        if (srvAt > localAt + marginMs) {
-          // servidor claramente mais recente -> sessão concorrente real
-          return { ok: false, concurrent: true };
-        } else {
-          // diferença pequena ou local mais recente -> alinhar servidor para local
+        const marginMs = 3000;
+        if (srvAt > localAt + marginMs) return { ok: false, concurrent: true };
+        else {
           await registerSession(user, localToken);
           return { ok: true, mustChange: srv.mustChangePassword === true };
         }
       } catch (err) {
         console.warn("verifySession erro:", err);
-        // Em qualquer erro, não travar login
         return { ok: true };
       }
     }
-
-    /* ========= Modais helpers ========= */
 
     function showChangePassModal(show = true) {
       changePassModal.classList.toggle('hidden', !show);
@@ -453,11 +445,8 @@
       setTimeout(() => loginMsg.classList.add("hidden"), 6000);
     }
 
-    /* ========= Auth flow ========= */
-
     onAuthStateChanged(auth, async user => {
       if (user) {
-        // 1) garantir sessão local/servidor
         const syncOk = await syncSession(user);
         if (!syncOk.ok) {
           showError("Erro ao preparar sessão. Tente novamente.");
@@ -465,12 +454,11 @@
           return;
         }
 
-        // 2) verificar conflito real (com margem)
         const check = await verifySession(user);
         if (!check.ok && check.concurrent) {
           const assumir = confirm("Sua conta está ativa em outro dispositivo. Deseja assumir esta sessão aqui?");
           if (assumir) {
-            const res = await syncSession(user); // sobrescreve servidor com local
+            const res = await syncSession(user);
             if (!res.ok) {
               showError("Não consegui assumir a sessão. Tente novamente.");
               await signOut(auth);
@@ -487,7 +475,6 @@
           }
         }
 
-        // 3) força troca de senha se necessário
         try {
           const srv = await getSessionInfo(user);
           const mustChange = !!(srv && srv.mustChangePassword);
@@ -500,7 +487,6 @@
           console.warn('Erro ao verificar mustChangePassword', err);
         }
 
-        // 4) liberar UI
         showChangePassModal(false);
         loginOverlay.classList.add("hidden");
         mainContent.classList.remove("hidden");
@@ -512,7 +498,7 @@
       }
     });
 
-    // Login Google
+    // Login handlers
     document.getElementById("btn-login-google").onclick = async () => {
       try {
         const provider = new GoogleAuthProvider();
@@ -524,7 +510,6 @@
       }
     };
 
-    // Login Email/Senha
     btnLogin.onclick = async () => {
       btnLogin.classList.add('btn-pressed');
       const email = document.getElementById("email").value.trim();
@@ -545,7 +530,7 @@
       }
     };
 
-    // Logout (limpa token servidor)
+    // Logout
     const btnLogoutMain = document.getElementById('btn-logout');
     if (btnLogoutMain) {
       btnLogoutMain.addEventListener('click', async () => {
@@ -567,7 +552,7 @@
       });
     }
 
-    // Trocar senha (primeiro acesso)
+    // Trocar senha
     btnChangePass.addEventListener('click', async () => {
       changePassMsg.classList.add('hidden');
       const newPass = newPassInput.value.trim();
@@ -661,4 +646,3 @@
   </script>
 </body>
 </html>
-
