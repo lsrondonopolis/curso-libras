@@ -116,6 +116,22 @@
         const nomeResponsavelInput = document.getElementById('nome_responsavel');
         const responsavelInscritoBox = document.getElementById('responsavel-inscrito-box');
 
+        const form = document.getElementById('form-cadastro');
+        const telefoneInput = document.getElementById('telefone'); // Novo elemento
+
+        // 1. Lógica da Máscara de Telefone
+        function maskPhone(value) {
+            if (!value) return "";
+            value = value.replace(/\D/g, ""); // Remove tudo que não é dígito
+            value = value.replace(/^(\d{2})(\d)/g, "($1) $2"); // Coloca parênteses e espaço
+            value = value.replace(/(\d)(\d{4})$/, "$1-$2"); // Coloca hífen
+            return value;
+}
+
+// 2. Listener da Máscara (ADICIONE FORA DO form.addEventListener)
+telefoneInput.addEventListener('input', (e) => {
+    e.target.value = maskPhone(e.target.value);
+});
 
         /* ======================
            LÓGICA VISUAL E OBRIGATORIEDADE
@@ -149,91 +165,98 @@
 
         /* ======================
            LÓGICA DE CADASTRO E LIMITE
-        ======================*/
+           ======================*/
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+    
             // Validação final de campos vazios pelo HTML (required)
-            if (!form.checkValidity()) {
-                alert('Por favor, preencha todos os campos obrigatórios.');
-                return;
-            }
+        if (!form.checkValidity()) {
+            alert('Por favor, preencha todos os campos obrigatórios.');
+            return;
+        }
 
-            // Removido feedbackMsg.textContent = 'Processando inscrição...';
+        // 1. Coleta dos Dados
+        const nome = document.getElementById('nome_completo').value; 
+        const email = document.getElementById('email_aluno').value;
+        const telefone = document.getElementById('telefone').value;
+        const congregacao = document.getElementById('congregacao').value;
+        const maiorIdade = document.querySelector('input[name="idade"]:checked').value === 'sim';
+    
+        // NOVO: VALIDAÇÃO DE SOBRENOME PARA O ALUNO
+        if (!isValidName(nome)) {
+            alert('Por favor, digite o nome completo (nome e pelo menos um sobrenome).');
+            return;
+        }
+    
+        let nomeResponsavel = null;
+        let responsavelInscrito = null;
 
-            // 1. Coleta dos Dados
-            // NOTE: A variável 'nome' estava usando nomeResponsavelInput.value. Corrigido para nome_completo.
-            const nome = document.getElementById('nome_completo').value; 
-            const email = document.getElementById('email_aluno').value;
-            const telefone = document.getElementById('telefone').value;
-            const congregacao = document.getElementById('congregacao').value;
-            const maiorIdade = document.querySelector('input[name="idade"]:checked').value === 'sim';
-            
-            let nomeResponsavel = null;
-            let responsavelInscrito = null;
-
-            if (!maiorIdade) {
-                 nomeResponsavel = nomeResponsavelInput.value;
-                 // É necessário verificar se um dos radios (sim/nao) foi selecionado para o responsável
-                 const respRadio = document.querySelector('input[name="responsavel_inscrito"]:checked');
-                 responsavelInscrito = respRadio ? respRadio.value === 'sim' : null;
-            }
+        if (!maiorIdade) {
+             nomeResponsavel = nomeResponsavelInput.value;
+         
+         // NOVO: VALIDAÇÃO DE SOBRENOME PARA O RESPONSÁVEL
+         if (!isValidName(nomeResponsavel)) {
+            alert('Por favor, digite o nome completo do responsável (nome e pelo menos um sobrenome).');
+            return;
+         }
+         
+         // É necessário verificar se um dos radios (sim/nao) foi selecionado para o responsável
+         const respRadio = document.querySelector('input[name="responsavel_inscrito"]:checked');
+         responsavelInscrito = respRadio ? respRadio.value === 'sim' : null;
+    }
 
 
-            // 2. Lógica de Contagem e Turma
-            try {
-                // Checa se o email já existe (para evitar duplicação)
-                const snapshotDocs = await getDocs(REGISTROS_REF);
-                const emailsExistentes = snapshotDocs.docs.map(doc => doc.data().email.toLowerCase());
-                
-                if (emailsExistentes.includes(email.toLowerCase())) {
-                    // MUDADO PARA ALERT
-                    alert('Este e-mail já está cadastrado. Por favor, use a opção de Login.');
-                    return;
-                }
+    // 2. Lógica de Contagem e Turma
+    try {
+        // Checa se o email já existe (para evitar duplicação)
+        const snapshotDocs = await getDocs(REGISTROS_REF);
+        const emailsExistentes = snapshotDocs.docs.map(doc => doc.data().email.toLowerCase());
+        
+        if (emailsExistentes.includes(email.toLowerCase())) {
+            alert('Este e-mail já está cadastrado. Por favor, use a opção de Login.');
+            return;
+        }
 
-                const totalInscritos = snapshotDocs.size;
-                let turma_designada = '';
-                let mensagem = '';
-                // msg_cor não é mais necessária
+        const totalInscritos = snapshotDocs.size;
+        let turma_designada = '';
+        let mensagem = '';
 
-                if (totalInscritos < LIMITE_TURMA_1) {
-                    turma_designada = 'Turma 1';
-                    mensagem = 'Inscrição confirmada! Você está na Turma 1. Aguarde contato.';
-                } 
-                else if (totalInscritos < LIMITE_TOTAL) {
-                    turma_designada = 'Lista de Espera / Turma 2';
-                    mensagem = 'Agradecemos seu interesse, mas no momento, as vagas da Turma 1 estão esgotadas. Você foi adicionado à Lista de Espera/Turma 2.';
-                } 
-                else {
-                    // MUDADO PARA ALERT
-                    alert('Agradecemos seu interesse, mas no momento as vagas foram encerradas. (Limite de 40 alunos atingido).');
-                    return; 
-                }
+        if (totalInscritos < LIMITE_TURMA_1) {
+            turma_designada = 'Turma 1';
+            mensagem = 'Inscrição confirmada! Você está na Turma 1. Aguarde contato.';
+        } 
+        else if (totalInscritos < LIMITE_TOTAL) {
+            turma_designada = 'Lista de Espera / Turma 2';
+            mensagem = 'Agradecemos seu interesse, mas no momento, as vagas da Turma 1 estão esgotadas. Você foi adicionado à Lista de Espera/Turma 2.';
+        } 
+        else {
+            alert('Agradecemos seu interesse, mas no momento as vagas foram encerradas. (Limite de 40 alunos atingido).');
+            return; 
+        }
 
-                // 3. Registro no Firestore
-                await setDoc(doc(REGISTROS_REF), {
-                    nome: nome,
-                    email: email,
-                    telefone: telefone,
-                    congregacao: congregacao,
-                    maior_idade: maiorIdade,
-                    nome_responsavel: nomeResponsavel,
-                    responsavel_inscrito: responsavelInscrito,
-                    turma: turma_designada,
-                    timestamp: new Date()
-                });
-                
-                // Sucesso - MUDADO PARA ALERT
-                alert(mensagem); 
-                form.reset(); // Limpa o formulário
-
-            } catch (e) {
-                console.error("Erro ao registrar no Firestore:", e);
-                // Erro - MUDADO PARA ALERT
-                alert('Erro grave ao processar a inscrição. Tente novamente.');
-            }
+        // 3. Registro no Firestore
+        await setDoc(doc(REGISTROS_REF), {
+            nome: nome,
+            email: email,
+            telefone: telefone,
+            congregacao: congregacao,
+            maior_idade: maiorIdade,
+            nome_responsavel: nomeResponsavel,
+            responsavel_inscrito: responsavelInscrito,
+            turma: turma_designada,
+            timestamp: new Date()
         });
+        
+        // Sucesso
+        alert(mensagem); 
+        form.reset(); // Limpa o formulário
+
+    } catch (e) {
+        console.error("Erro ao registrar no Firestore:", e);
+        alert('Erro grave ao processar a inscrição. Tente novamente.');
+    }
+});
     </script>
 </body>
 </html>
+
